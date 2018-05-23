@@ -9,10 +9,11 @@ DATE_END=`date --date="${DATE_END}" "+%Y/%m/%d(%a) %H:%M"`
 
 ORGANIZER=`egrep "^ORGANIZER;CN=" "${FILE}" | awk -F':' '{ print $NF }'`
 
-ATTENDEE=`egrep -A 2 '^ATTENDEE' "${FILE}" | awk -F: '{ print $NF }' | egrep -v '^ATTENDEE'`
+ATTENDEE=`egrep -A 2 '^ATTENDEE' "${FILE}" | egrep -v '^ATTENDEE'  | grep -F -v 'facility-' | awk -F: '{ print $NF }' | grep -F '@'` 
+ROOM=`egrep '^LOCATION' "${FILE}" | awk -F: '{ print $NF }'`
 
 echo
 echo "作成者: ${ORGANIZER}"
 echo "  日時: ${DATE_START} 〜 ${DATE_END}"
-echo "参加者: "
-echo "${ATTENDEE}" | awk -F: '{ print $NF }' | egrep -v '^ATTENDEE' | sed -e 's/$/, /g' | tr -d '\n' | fold --space 
+echo "  場所: ${ROOM}"
+echo "参加者: ${ATTENDEE}"| nkf -w | sed -e 's/$/, /g' | tr -d '\n' | fold --space 
